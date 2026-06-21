@@ -1,0 +1,1093 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BGE vizsgagyakorló</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fa;
+      --paper: #ffffff;
+      --paper-2: #fbfcfe;
+      --ink: #16181d;
+      --muted: #6a707b;
+      --line: #dfe3ea;
+      --strong-line: #c8d0dc;
+      --accent: #245b8f;
+      --accent-2: #163d63;
+      --accent-soft: #e9f2fb;
+      --good: #157347;
+      --good-soft: #edf8f2;
+      --bad: #b42318;
+      --bad-soft: #fff1ef;
+      --warn: #8a6100;
+      --warn-soft: #fff8e6;
+      --radius: 8px;
+      --shadow: 0 10px 24px rgba(18, 38, 63, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.45;
+    }
+    body.modal-open {
+      overflow: hidden;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .app-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+    .topbar {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .topbar-inner {
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 16px 22px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .brand {
+      font-weight: 800;
+      font-size: 20px;
+      letter-spacing: 0;
+    }
+    .brand-sub {
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: end;
+    }
+    main {
+      max-width: 1220px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 26px 22px 56px;
+    }
+    h1, h2, h3 { letter-spacing: 0; }
+    h1 {
+      font-size: clamp(26px, 4vw, 42px);
+      margin: 0 0 8px;
+      line-height: 1.12;
+    }
+    h2 {
+      font-size: 22px;
+      margin: 30px 0 12px;
+    }
+    h3 {
+      font-size: 17px;
+      margin: 0 0 6px;
+    }
+    p { margin: 0 0 12px; }
+    .muted { color: var(--muted); }
+    .hero {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: clamp(20px, 4vw, 34px);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
+      gap: 24px;
+      align-items: end;
+    }
+    .hero-kpis {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .kpi {
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+      border-radius: var(--radius);
+      padding: 13px;
+    }
+    .kpi strong {
+      display: block;
+      font-size: 25px;
+      line-height: 1.1;
+    }
+    .kpi span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .rules {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .rule {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      font-size: 14px;
+    }
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: var(--radius);
+      padding: 9px 13px;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-decoration: none;
+    }
+    .btn:hover { border-color: var(--accent); }
+    .btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .btn.primary:hover {
+      background: var(--accent-2);
+      border-color: var(--accent-2);
+    }
+    .btn.danger {
+      border-color: #efc4bf;
+      color: var(--bad);
+      background: #fff;
+    }
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 14px;
+    }
+    .filter-btn {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      border-radius: 999px;
+      padding: 8px 12px;
+      color: var(--ink);
+    }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .test-card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      min-height: 220px;
+      box-shadow: 0 5px 16px rgba(18, 38, 63, .04);
+    }
+    .test-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow);
+    }
+    .test-card-header {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .test-badge {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 800;
+      flex: 0 0 auto;
+    }
+    .test-card h3 { margin-top: 0; }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 2px;
+    }
+    .pill {
+      border: 1px solid var(--line);
+      background: var(--paper-2);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: auto;
+    }
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .modal-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      padding: 20px;
+      overflow: auto;
+    }
+    .modal-screen.active {
+      display: grid;
+      place-items: center;
+    }
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(22, 24, 29, .46);
+      backdrop-filter: blur(4px);
+    }
+    .exam-dialog {
+      position: relative;
+      z-index: 1;
+      width: min(1120px, 100%);
+      max-height: calc(100vh - 40px);
+      overflow: auto;
+      padding: 18px;
+    }
+    .exam-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 270px;
+      gap: 18px;
+      align-items: start;
+    }
+    .exam-main {
+      padding: 18px;
+    }
+    .exam-sidebar {
+      position: sticky;
+      top: 86px;
+      padding: 16px;
+    }
+    .exam-title-row {
+      display: flex;
+      gap: 12px;
+      align-items: start;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+    }
+    .modal-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 292px;
+      gap: 18px;
+      align-items: start;
+    }
+    .question-stage {
+      min-height: 420px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      gap: 14px;
+    }
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+    }
+    .step-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .progress-wrap {
+      margin: 14px 0;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .progress {
+      height: 8px;
+      border-radius: 999px;
+      background: #eef1f5;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width .18s ease;
+    }
+    .question-nav {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 12px;
+    }
+    .qjump {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      min-height: 34px;
+      border-radius: 7px;
+      font-size: 13px;
+    }
+    .qjump.answered {
+      background: var(--accent-soft);
+      border-color: #b7d2eb;
+      color: var(--accent-2);
+      font-weight: 700;
+    }
+    .qjump.current {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+      font-weight: 800;
+    }
+    .qjump.correct {
+      background: var(--good-soft);
+      color: var(--good);
+      border-color: #abd7bd;
+    }
+    .qjump.incorrect {
+      background: var(--bad-soft);
+      color: var(--bad);
+      border-color: #f0b8b0;
+    }
+    .question-list {
+      display: grid;
+      gap: 12px;
+    }
+    .single-question {
+      align-content: start;
+    }
+    .question {
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--accent);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 15px;
+      scroll-margin-top: 96px;
+    }
+    .question.is-current {
+      padding: 22px;
+      min-height: 260px;
+      display: grid;
+      align-content: center;
+    }
+    .question.review-correct { border-left-color: var(--good); background: var(--good-soft); }
+    .question.review-incorrect { border-left-color: var(--bad); background: var(--bad-soft); }
+    .q-top {
+      display: grid;
+      grid-template-columns: 36px minmax(0, 1fr);
+      gap: 11px;
+      align-items: start;
+    }
+    .q-num {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line);
+      color: var(--accent);
+      font-weight: 800;
+      background: var(--paper-2);
+    }
+    .prompt {
+      font-size: 16px;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    mark {
+      background: #fff2a8;
+      border-radius: 3px;
+      padding: 0 3px;
+    }
+    .answer-row {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: minmax(180px, 430px) minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+    input.answer {
+      width: 100%;
+      min-height: 43px;
+      border-radius: var(--radius);
+      border: 1px solid var(--strong-line);
+      padding: 10px 11px;
+      background: #fff;
+    }
+    input.answer:focus {
+      outline: 3px solid #9bc7ef;
+      outline-offset: 1px;
+      border-color: var(--accent);
+    }
+    input.answer.correct {
+      border-color: var(--good);
+      background: #f9fffb;
+    }
+    input.answer.incorrect {
+      border-color: var(--bad);
+      background: #fffafa;
+    }
+    .feedback {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .feedback.good { color: var(--good); }
+    .feedback.bad { color: var(--bad); }
+    .step-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+    .step-actions-left,
+    .step-actions-right {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin: 12px 0;
+    }
+    .status-box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: var(--paper-2);
+    }
+    .status-box strong {
+      display: block;
+      font-size: 23px;
+      line-height: 1.1;
+    }
+    .status-box span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .result-card {
+      padding: 18px;
+      margin-top: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .result-card.good {
+      border-color: #b7ddc7;
+      background: var(--good-soft);
+    }
+    .result-card.warn {
+      border-color: #edd489;
+      background: var(--warn-soft);
+    }
+    .result-card.bad {
+      border-color: #f0b8b0;
+      background: var(--bad-soft);
+    }
+    .result-score {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1.1;
+      margin: 6px 0;
+    }
+    .result-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 980px) {
+      .hero-grid, .exam-layout, .modal-body { grid-template-columns: 1fr; }
+      .exam-sidebar { position: static; }
+      .test-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .exam-dialog { max-height: none; }
+    }
+    @media (max-width: 660px) {
+      .topbar-inner { grid-template-columns: 1fr; }
+      .top-actions { justify-content: start; }
+      .test-grid, .hero-kpis, .rules, .answer-row { grid-template-columns: 1fr; }
+      main { padding-inline: 14px; }
+      .question-nav { grid-template-columns: repeat(4, 1fr); }
+      .modal-screen { padding: 10px; }
+      .exam-dialog { padding: 14px; }
+      .step-actions { align-items: stretch; flex-direction: column; }
+      .step-actions-left,
+      .step-actions-right { width: 100%; }
+      .step-actions .btn { flex: 1 1 auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div>
+          <div class="brand">BGE vizsgagyakorló</div>
+          <div class="brand-sub">Beírós tesztek szakmai szavakra, kifejezésekre és prepozíciókra</div>
+        </div>
+        <div class="top-actions">
+          <button class="btn" id="homeBtn" type="button">Tesztválasztó</button>
+          <button class="btn" id="newRoundBtn" type="button">Új kör</button>
+          <a class="btn primary" href="BGE_szurt_szakszavak_prezpoziciok_osszefoglalo.docx" download>Összefoglaló</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="screen active" id="dashboardScreen">
+        <div class="hero">
+          <div class="hero-grid">
+            <div>
+              <h1>Indíts külön tesztet minden témára</h1>
+              <p class="muted">A felület a CoSpace beírós tesztlogikáját követi: először indítasz, kitöltés közben nincs megoldás, a pontozás csak befejezés után látszik, a helyes válaszok pedig csak visszanézéskor.</p>
+            </div>
+            <div class="hero-kpis">
+              <div class="kpi"><strong id="kpiWeekly">90</strong><span>gyakorlati heti kérdés</span></div>
+              <div class="kpi"><strong id="kpiPrep">225</strong><span>prepozíciós kérdés</span></div>
+              <div class="kpi"><strong id="kpiTests">21</strong><span>külön indítható teszt</span></div>
+              <div class="kpi"><strong>1p</strong><span>minden helyes válasz</span></div>
+            </div>
+          </div>
+          <div class="rules">
+            <div class="rule"><strong>Indítás kell</strong><br>kérdések csak a választott teszt indítása után jelennek meg</div>
+            <div class="rule"><strong>Nincs súgás</strong><br>kitöltés közben nincs jó válasz és nincs pontozás</div>
+            <div class="rule"><strong>Spelling számít</strong><br>kis/nagybetű nem számít, helyesírási hiba 0 pont</div>
+            <div class="rule"><strong>Visszanézés</strong><br>a végén látszik a saját rossz válasz és a helyes megoldás</div>
+          </div>
+        </div>
+
+        <div class="filters" role="group" aria-label="Tesztcsoport szűrő">
+          <button class="filter-btn active" data-filter="all" type="button">Összes teszt</button>
+          <button class="filter-btn" data-filter="weekly" type="button">6 gyakorlati hét</button>
+          <button class="filter-btn" data-filter="prepositions" type="button">Prepozíciók</button>
+        </div>
+
+        <div class="section-head">
+          <div>
+            <h2>Gyakorlati hetek</h2>
+            <p class="muted">Hat külön indítható teszt, 15-15 kérdéssel.</p>
+          </div>
+        </div>
+        <div class="test-grid" id="weeklyGrid"></div>
+
+        <div class="section-head">
+          <div>
+            <h2>Prepozíciós tesztek</h2>
+            <p class="muted">225 feladat, 15 kérdéses blokkokra bontva.</p>
+          </div>
+        </div>
+        <div class="test-grid" id="prepGrid"></div>
+      </section>
+
+      <section class="screen modal-screen" id="examScreen" role="dialog" aria-modal="true" aria-labelledby="examTitle" aria-hidden="true">
+        <div class="modal-backdrop" id="modalBackdrop"></div>
+        <div class="panel exam-dialog">
+          <div class="exam-title-row">
+            <div>
+              <h1 id="examTitle">Teszt</h1>
+              <p class="muted" id="examDescription"></p>
+            </div>
+            <button class="btn danger" id="exitBtn" type="button">Kilépés</button>
+          </div>
+          <div class="modal-body">
+            <div class="question-stage">
+              <div class="step-header">
+                <span class="step-label" id="stepLabel">1 / 15</span>
+                <span class="pill" id="topicLabel">Téma</span>
+              </div>
+              <div class="question-list single-question" id="questionList"></div>
+              <div class="step-actions">
+                <div class="step-actions-left">
+                  <button class="btn" id="prevBtn" type="button">Előző</button>
+                </div>
+                <div class="step-actions-right">
+                  <button class="btn primary" id="nextBtn" type="button" disabled>Következő</button>
+                </div>
+              </div>
+            </div>
+            <aside class="exam-sidebar">
+              <h3>Kitöltés állapota</h3>
+              <div class="progress-wrap">
+                <div class="progress-label"><span>Megválaszolva</span><span id="answeredLabel">0 / 15</span></div>
+                <div class="progress" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+              </div>
+              <div class="status-grid">
+                <div class="status-box"><strong id="scoreNow">—</strong><span>pont</span></div>
+                <div class="status-box"><strong id="percentNow">—</strong><span>eredmény</span></div>
+                <div class="status-box"><strong id="totalNow">15</strong><span>kérdés</span></div>
+                <div class="status-box"><strong id="modeNow">Írás</strong><span>mód</span></div>
+              </div>
+              <div class="question-nav" id="questionNav"></div>
+              <div class="result-actions">
+                <button class="btn hidden" id="reviewBtn" type="button">Visszanézés</button>
+                <button class="btn" id="retryBtn" type="button">Újrakezdés</button>
+              </div>
+              <div id="summary"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script id="test-data" type="application/json">{"weeklyTests": [{"id": "week-1", "title": "Week 1 - Culture", "description": "Cultural differences, small talk, etiquette, modal verbs.", "questions": [{"prompt": "Small talk is used to ___ the ice.", "answers": ["break"], "hint": "Idiom: break the ice.", "topic": "Week 1 - Culture"}, {"prompt": "We do not see eye ___ eye about punctuality.", "answers": ["to"], "hint": "Idiom preposition.", "topic": "Week 1 - Culture"}, {"prompt": "I was thrown ___ the deep end when I had to run the German office.", "answers": ["in at"], "hint": "Full phrase: thrown in at the deep end.", "topic": "Week 1 - Culture"}, {"prompt": "A cultural mistake can get you ___ hot water.", "answers": ["into"], "hint": "Idiom: get into hot water.", "topic": "Week 1 - Culture"}, {"prompt": "You should go ___ the flow in unfamiliar business situations.", "answers": ["with"], "hint": "Idiom preposition.", "topic": "Week 1 - Culture"}, {"prompt": "If you are not clear, ask the speaker to ___ what they said.", "answers": ["repeat"], "hint": "Active listening.", "topic": "Week 1 - Culture"}, {"prompt": "A successful international businessperson should be non-___.", "answers": ["judgemental"], "hint": "Key listening point.", "topic": "Week 1 - Culture"}, {"prompt": "In many cultures, relationship-building comes before getting down ___ business.", "answers": ["to"], "hint": "Fixed expression.", "topic": "Week 1 - Culture"}, {"prompt": "You ___ research local etiquette before a business trip.", "answers": ["should"], "hint": "Advice.", "topic": "Week 1 - Culture"}, {"prompt": "You ___ disclose confidential information.", "answers": ["mustn't"], "hint": "Prohibition.", "topic": "Week 1 - Culture"}, {"prompt": "You ___ get a visa if the law requires it.", "answers": ["have to"], "hint": "External obligation.", "topic": "Week 1 - Culture"}, {"prompt": "You do not ___ to eat loudly if you do not want to.", "answers": ["have"], "hint": "Lack of necessity: do not have to.", "topic": "Week 1 - Culture"}, {"prompt": "Business cards should be offered ___ both hands in some Asian cultures.", "answers": ["with"], "hint": "Protocol phrase.", "topic": "Week 1 - Culture"}, {"prompt": "I did not quite ___ your name.", "answers": ["catch"], "hint": "Polite formula.", "topic": "Week 1 - Culture"}, {"prompt": "The meeting ran ___ schedule.", "answers": ["over"], "hint": "Collocation.", "topic": "Week 1 - Culture"}]}, {"id": "week-3", "title": "Week 3 - Employment", "description": "Job search, employment trends, HR language, portfolio work.", "questions": [{"prompt": "A person who works for several clients has a portfolio ___.", "answers": ["career"], "hint": "Portfolio career.", "topic": "Week 3 - Employment"}, {"prompt": "A person working for himself or herself is self-___.", "answers": ["employed"], "hint": "Employment type.", "topic": "Week 3 - Employment"}, {"prompt": "Temporary daily work is casual ___.", "answers": ["labour"], "hint": "Employment pattern.", "topic": "Week 3 - Employment"}, {"prompt": "Working from home is often called ___.", "answers": ["teleworking"], "hint": "Employment pattern.", "topic": "Week 3 - Employment"}, {"prompt": "Work done only during summer or winter holidays is ___ work.", "answers": ["seasonal"], "hint": "Employment pattern.", "topic": "Week 3 - Employment"}, {"prompt": "A nurse working nights does ___ work.", "answers": ["shift"], "hint": "Employment pattern.", "topic": "Week 3 - Employment"}, {"prompt": "The opposite of job insecurity is job ___.", "answers": ["security"], "hint": "Key term.", "topic": "Week 3 - Employment"}, {"prompt": "When staff leave a company frequently, this is employee ___.", "answers": ["turnover"], "hint": "HR term.", "topic": "Week 3 - Employment"}, {"prompt": "Regular absence from work is ___.", "answers": ["absenteeism"], "hint": "HR term.", "topic": "Week 3 - Employment"}, {"prompt": "A company can recruit staff or take ___ staff.", "answers": ["on"], "hint": "HR phrasal verb.", "topic": "Week 3 - Employment"}, {"prompt": "A company can make staff ___.", "answers": ["redundant"], "hint": "HR verb phrase.", "topic": "Week 3 - Employment"}, {"prompt": "A worker can quit or ___ a job.", "answers": ["leave"], "hint": "Synonym.", "topic": "Week 3 - Employment"}, {"prompt": "The money paid after redundancy is a redundancy ___.", "answers": ["package"], "hint": "HR collocation.", "topic": "Week 3 - Employment"}, {"prompt": "Trying to fit several jobs into your life is to ___ them.", "answers": ["juggle"], "hint": "Giganomics vocabulary.", "topic": "Week 3 - Employment"}, {"prompt": "A short-term project can be called a ___.", "answers": ["gig"], "hint": "Giganomics vocabulary.", "topic": "Week 3 - Employment"}]}, {"id": "week-5", "title": "Week 5 - Marketing", "description": "Customer-centric marketing, campaigns, target groups.", "questions": [{"prompt": "Marketing focused on the buyer is customer-___.", "answers": ["centric"], "hint": "Customer-centric marketing.", "topic": "Week 5 - Marketing"}, {"prompt": "Unwanted, annoying marketing is ___ marketing.", "answers": ["intrusive"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "The degree to which people know a brand is brand ___.", "answers": ["awareness"], "hint": "Revision vocabulary.", "topic": "Week 5 - Marketing"}, {"prompt": "A detailed description of a target customer is a customer ___.", "answers": ["profile"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "A group of related products is a product ___.", "answers": ["line"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "Long-term repeat buying is customer ___.", "answers": ["loyalty"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "A famous person recommending a product is product ___.", "answers": ["endorsement"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "Natural recommendations between customers are word-of-mouth ___.", "answers": ["referrals"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "A campaign that spreads quickly online is ___ marketing.", "answers": ["viral"], "hint": "Marketing term.", "topic": "Week 5 - Marketing"}, {"prompt": "The percentage of sales a company has in a market is market ___.", "answers": ["share"], "hint": "Marketing collocation.", "topic": "Week 5 - Marketing"}, {"prompt": "A campaign is often aimed ___ a target group.", "answers": ["at"], "hint": "Preposition.", "topic": "Week 5 - Marketing"}, {"prompt": "A product can be tailored ___ customer needs.", "answers": ["to"], "hint": "Preposition.", "topic": "Week 5 - Marketing"}, {"prompt": "Customer relationship management is often abbreviated as ___.", "answers": ["CRM"], "hint": "Abbreviation.", "topic": "Week 5 - Marketing"}, {"prompt": "A memorable campaign slogan can be called a ___.", "answers": ["strapline"], "hint": "Presentation/campaign term.", "topic": "Week 5 - Marketing"}, {"prompt": "An official announcement to the media is a press ___.", "answers": ["release"], "hint": "Writing task.", "topic": "Week 5 - Marketing"}]}, {"id": "week-7", "title": "Week 7 - Graphs and Charts Part 1", "description": "Creative accounting, share prices, trend verbs, adjectives/adverbs.", "questions": [{"prompt": "A company listed on a stock exchange has a share ___.", "answers": ["price"], "hint": "Stock graph term.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "Misleading presentation of accounts is creative ___.", "answers": ["accounting"], "hint": "Financial scandal term.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "A very fast fall in share price can be called a ___.", "answers": ["nosedive"], "hint": "Graph verb/noun.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "A very fast upward movement can be described as to ___.", "answers": ["skyrocket"], "hint": "Graph verb.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "The highest point on a graph is a ___.", "answers": ["peak"], "hint": "Graph noun.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "The lowest point ever is an all-time ___.", "answers": ["low"], "hint": "Graph phrase.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "A small fall can be called a ___.", "answers": ["dip"], "hint": "Graph noun/verb.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "The shares fell ___ after the scandal.", "answers": ["sharply"], "hint": "Adverb.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "A dramatic fall is described with an ___ before a noun.", "answers": ["adjective"], "hint": "Grammar point.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "Shares fell dramatically; dramatically is an ___.", "answers": ["adverb"], "hint": "Grammar point.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "NavTech invented revenue from a non-existent ___.", "answers": ["company"], "hint": "Audio p69.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "Com.TV was losing money on loss-making ___.", "answers": ["acquisitions"], "hint": "Audio p69.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "WorldCom reached a record ___ in 1999.", "answers": ["high"], "hint": "Audio p73.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "After 1999 WorldCom shares ___ to an all-time low.", "answers": ["nosedived"], "hint": "Audio p73.", "topic": "Week 7 - Graphs and Charts Part 1"}, {"prompt": "A graph can fluctuate ___ two values.", "answers": ["between"], "hint": "Graph preposition.", "topic": "Week 7 - Graphs and Charts Part 1"}]}, {"id": "week-9", "title": "Week 9 - Graphs and Charts Part 2", "description": "Introducing visuals, interpreting visuals, graph prepositions.", "questions": [{"prompt": "The vertical ___ shows turnover.", "answers": ["axis"], "hint": "Visual language.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "The horizontal ___ represents the years.", "answers": ["axis"], "hint": "Visual language.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Please have a ___ at this graph.", "answers": ["look"], "hint": "Introducing visuals.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "I would like to draw your attention ___ this figure.", "answers": ["to"], "hint": "Visual preposition.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Let us focus our attention ___ the upper half.", "answers": ["on"], "hint": "Visual preposition.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "The conclusions to be drawn ___ this are clear.", "answers": ["from"], "hint": "Interpretation phrase.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "The implications ___ this trend are serious.", "answers": ["of"], "hint": "Interpretation phrase.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Sales rose ___ EUR 18,000.", "answers": ["to"], "hint": "Graph preposition.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Sales increased ___ more than 160 percent.", "answers": ["by"], "hint": "Change amount.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "There was an increase ___ more than 160 percent.", "answers": ["of"], "hint": "Noun phrase.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Sales peaked ___ just under EUR 25,000.", "answers": ["at"], "hint": "Graph preposition.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Sales bottomed ___.", "answers": ["out"], "hint": "Phrasal verb.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "The trend levelled ___.", "answers": ["off"], "hint": "Phrasal verb.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "Sales picked ___ again in June.", "answers": ["up"], "hint": "Phrasal verb.", "topic": "Week 9 - Graphs and Charts Part 2"}, {"prompt": "The figure stayed just short ___ EUR 15,000.", "answers": ["of"], "hint": "Fixed phrase.", "topic": "Week 9 - Graphs and Charts Part 2"}]}, {"id": "week-11", "title": "Week 11 - Academic Life", "description": "Academic vocabulary, Erasmus transcript, credit transfer.", "questions": [{"prompt": "A formal university talk is a ___.", "answers": ["lecture"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "A smaller interactive class is a ___.", "answers": ["seminar"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "A written research project submitted for a degree is a ___.", "answers": ["thesis"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "Required reading is ___ reading.", "answers": ["compulsory"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "Optional but useful reading is ___ reading.", "answers": ["recommended"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "An official record of courses, grades and credits is an academic ___.", "answers": ["transcript"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "Recognition of credits from another institution is credit ___.", "answers": ["transfer"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "A course that must be completed before another is a pre-___.", "answers": ["requisite"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "A subject chosen from a list is an ___ course.", "answers": ["elective"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "A subject every student must complete is a compulsory ___.", "answers": ["subject"], "hint": "Academic term.", "topic": "Week 11 - Academic Life"}, {"prompt": "The academic leader of a department is the head ___ department.", "answers": ["of"], "hint": "Preposition.", "topic": "Week 11 - Academic Life"}, {"prompt": "Tamás was accepted ___ a partner institution.", "answers": ["to"], "hint": "Academic preposition.", "topic": "Week 11 - Academic Life"}, {"prompt": "Anna submitted her transcript ___ the department.", "answers": ["to"], "hint": "Academic preposition.", "topic": "Week 11 - Academic Life"}, {"prompt": "The course overlaps ___ the Hungarian subject.", "answers": ["with"], "hint": "Credit transfer preposition.", "topic": "Week 11 - Academic Life"}, {"prompt": "A course can be partially ___.", "answers": ["accepted"], "hint": "Credit transfer decision.", "topic": "Week 11 - Academic Life"}]}], "prepositionTests": [{"id": "prep-01", "title": "Prepozíciók 01 - Pénzügyi alapfogalmak", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "There was an increase ___ demand.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "There was a fall ___ prices.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The demand ___ imported goods rose.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The supply ___ services decreased.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The company spent money ___ new equipment.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The firm invested ___ new technology.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The result was compared ___ last year.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "High inflation can lead ___ lower demand.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The recession resulted ___ higher unemployment.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The decline resulted ___ weak consumer demand.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "Consumers paid ___ the service in advance.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The company made a profit ___ the deal.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The firm reported a loss ___ the investment.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "The budget is responsible ___ cost control.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}, {"prompt": "Economic growth depends ___ productivity.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Pénzügyi alapfogalmak"}]}, {"id": "prep-02", "title": "Prepozíciók 02 - Banking", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "She deposited money ___ her current account.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "He withdrew cash ___ the ATM.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "They transferred money ___ a savings account.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "The bank transferred funds ___ one account to another.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "I paid ___ card.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "The customer paid ___ cash.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "He applied ___ a loan.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "They borrowed money ___ the bank.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "The bank lent money ___ the company.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "The bank charged a fee ___ the transfer.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "There is interest ___ the loan.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "There is interest ___ the deposit.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "The borrower defaulted ___ the loan.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "She repaid the loan ___ instalments.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}, {"prompt": "He exchanged euros ___ dollars.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Banking"}]}, {"id": "prep-03", "title": "Prepozíciók 03 - Tőzsde és részvények", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "He invested ___ shares.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "She bought shares ___ a listed company.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The shares are traded ___ the stock exchange.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The company is listed ___ the stock exchange.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The price ___ the share rose.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The value ___ the investment fell.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The share price rose ___ 10 percent.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The share price rose ___ EUR 60.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The share price fell ___ EUR 115 to EUR 45.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The share price fell ___ EUR 5.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "Investors lost confidence ___ the company.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The dividend ___ shares was paid in June.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The return ___ investment was low.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The company issued shares ___ the public.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}, {"prompt": "The scandal led ___ a market crash.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Tőzsde és részvények"}]}, {"id": "prep-04", "title": "Prepozíciók 04 - Vállalatok", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "She works ___ a multinational company.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "He is employed ___ a large corporation.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The manager is responsible ___ sales.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The CEO is in charge ___ strategy.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The sales team reports ___ the director.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The company specialises ___ logistics.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "Customer service deals ___ complaints.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The group consists ___ three subsidiaries.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The company is based ___ Budapest.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The firm is headquartered ___ London.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The company operates ___ 38 countries.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The business expanded ___ new markets.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The firm merged ___ a competitor.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The company competes ___ global brands.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}, {"prompt": "The supplier provides goods ___ retailers.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Vállalatok"}]}, {"id": "prep-05", "title": "Prepozíciók 05 - Globalizáció", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "The country trades ___ its neighbours.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The company exports goods ___ Germany.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The company imports parts ___ China.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Many firms source components ___ abroad.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Production was outsourced ___ a cheaper supplier.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Consumers benefit ___ lower prices.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Globalisation has an impact ___ local jobs.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Tariffs are a barrier ___ trade.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Small firms need access ___ global markets.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "Companies must comply ___ regulations.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The brand adapted ___ local tastes.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The company invested ___ emerging markets.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The factory relocated ___ another country.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The product was standardised ___ all markets.", "answers": ["across"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}, {"prompt": "The campaign was localised ___ each region.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Globalizáció"}]}, {"id": "prep-06", "title": "Prepozíciók 06 - Kommunikáció és üzleti események", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Please reply ___ the email.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "I am writing ___ response to your message.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The report was attached ___ the email.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The invitation was sent ___ all participants.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "Please copy me ___ on the email.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "We talked ___ the agenda.", "answers": ["about"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The speaker presented the findings ___ the audience.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The team focused ___ the main issue.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The chair referred ___ the previous meeting.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "They participated ___ a webinar.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "She registered ___ the conference.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The meeting started ___ 9 a.m.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "The event took place ___ the conference centre.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "He shared the screen ___ the participants.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}, {"prompt": "They connected ___ the online platform.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kommunikáció és üzleti események"}]}, {"id": "prep-07", "title": "Prepozíciók 07 - Kultúra", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Cultural awareness is based ___ preparation.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "You should adapt ___ local customs.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "Business practices differ ___ country to country.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "You communicate ___ partners from other cultures.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "Employees must cope ___ culture shock.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "He was invited ___ a partner's home.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "She is good ___ small talk.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "He has a good grasp ___ etiquette.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "I am up ___ my eyes in work.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "He is up to his eyes ___ work.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "We do not see eye ___ eye.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "He got ___ hot water.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "She was thrown in ___ the deep end.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "The meeting ran ___ schedule.", "answers": ["over"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}, {"prompt": "Go ___ the flow.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Kultúra"}]}, {"id": "prep-08", "title": "Prepozíciók 08 - Employment", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Portfolio workers rely ___ several clients.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "He was made redundant ___ his job.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "She works ___ an agency.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "Employees are ___ call at weekends.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "The discussion was ___ terms of job security.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "He is capable ___ working independently.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "The employee is responsible ___ communication.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "Poor management can lead ___ absenteeism.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "Listen ___ your colleague carefully.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "From your point ___ view, the office is too noisy.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "According ___ the report, turnover is high.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "She returned ___ work after maternity leave.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "The company laid ___ staff.", "answers": ["off"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "The company took ___ new staff.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}, {"prompt": "He handed ___ his resignation.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Employment"}]}, {"id": "prep-09", "title": "Prepozíciók 09 - Marketing", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "The campaign is aimed ___ young consumers.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The advert is targeted ___ urban buyers.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The product appeals ___ families.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The campaign focuses ___ sustainability.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The product is tailored ___ customer needs.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The tool is designed ___ women.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The company communicates ___ customers online.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The company invested ___ social media.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The marketing mix combines social media ___ retail partnerships.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The brand built loyalty ___ personalised offers.", "answers": ["through"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The company relied ___ endorsements.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The campaign resulted ___ higher awareness.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The product was launched ___ the European market.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The company entered ___ the snack market.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}, {"prompt": "The campaign was based ___ market research.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Marketing"}]}, {"id": "prep-10", "title": "Prepozíciók 10 - Graphs - change", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Sales rose ___ EUR 18,000.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "Sales fell ___ EUR 18,000 to EUR 11,000.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "Sales fell back ___ EUR 11,000.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The figure peaked ___ EUR 25,000.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The trend bottomed ___.", "answers": ["out"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The trend levelled ___.", "answers": ["off"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "Sales picked ___ again.", "answers": ["up"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "Sales shot ___ in February.", "answers": ["up"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The figure remained just short ___ EUR 15,000.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The figure was just over EUR 9,500 ___ January.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The rise continued ___ February and March.", "answers": ["between"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The overall increase was ___ 160 percent.", "answers": ["over"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "There was an increase ___ 160 percent.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "Sales increased ___ 160 percent.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}, {"prompt": "The value fluctuated ___ 9,700 and 9,300.", "answers": ["between"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Graphs - change"}]}, {"id": "prep-11", "title": "Prepozíciók 11 - Visual presentation", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Please look ___ this chart.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "I would like to focus attention ___ one feature.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "I want to draw your attention ___ the upper half.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "Let me point ___ two details.", "answers": ["out"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "Think ___ the significance of this figure.", "answers": ["about"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The conclusions to be drawn ___ this are clear.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The implications ___ this are serious.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The vertical axis refers ___ turnover.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The horizontal axis represents the years ___ 2020 to 2025.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The graph demonstrates a comparison ___ countries.", "answers": ["between"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The chart gives an idea ___ productivity levels.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The data is shown ___ the left.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The trend is obvious ___ this part of the graph.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "The message ___ this visual is simple.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}, {"prompt": "We will look ___ the reasons in a moment.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Visual presentation"}]}, {"id": "prep-12", "title": "Prepozíciók 12 - Academic life", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Tamás enrolled ___ several courses.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "He was accepted ___ a partner institution.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "He was accepted ___ the Erasmus programme.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "He submitted his transcript ___ the department.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The decision was approved ___ the head of department.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The course is part ___ the degree requirements.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The course depends ___ a prerequisite.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The course is equivalent ___ the Hungarian subject.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The Dutch course overlaps ___ the Hungarian course.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "There is no equivalent ___ the programme.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The paper was written ___ part of the seminar.", "answers": ["as"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The syllabus consists ___ compulsory readings.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "Recommended readings are useful ___ presentations.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "Credits were transferred ___ the home university.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}, {"prompt": "The student returned ___ Hungary.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Academic life"}]}, {"id": "prep-13", "title": "Prepozíciók 13 - Revision mix 1", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "Brand awareness increased ___ the campaign.", "answers": ["after"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Consumer resistance was stronger ___ traditional buyers.", "answers": ["among"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The company positioned itself ___ trustworthy.", "answers": ["as"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Feedback was used ___ refine communication.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The product line was organised ___ segments.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The team selected bloggers ___ their values.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Momentum was built ___ word of mouth.", "answers": ["through"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The campaign combined online activity ___ retail partnerships.", "answers": ["with"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The video succeeded ___ viral marketing.", "answers": ["through"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The graph shows performance ___ a six-month period.", "answers": ["over"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Sales were low ___ January.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The figure peaked ___ April.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "The trend reversed ___ April.", "answers": ["after"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Sales stabilised ___ the end of the period.", "answers": ["towards"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}, {"prompt": "Sales remained short ___ EUR 15,000.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 1"}]}, {"id": "prep-14", "title": "Prepozíciók 14 - Revision mix 2", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "The company prepared ___ enter the market.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The data showed interest ___ sustainable products.", "answers": ["in"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The offer was structured ___ product lines.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The system tracked engagement ___ time.", "answers": ["over"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The company relied ___ fitness bloggers.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The team focused ___ authenticity.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The approach was reinforced ___ partnerships.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "The chart compares sales ___ months.", "answers": ["across"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Sales started ___ just over EUR 9,500.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Sales rose quickly ___ EUR 18,000.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Growth continued ___ February and March.", "answers": ["between"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Sales peaked ___ just under EUR 25,000.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Sales fell back ___ around EUR 11,000.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Performance picked ___ again.", "answers": ["up"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}, {"prompt": "Sales levelled ___ by mid-July.", "answers": ["off"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Revision mix 2"}]}, {"id": "prep-15", "title": "Prepozíciók 15 - Master mixed round", "description": "15 kérdés, minden jó válasz 1 pont.", "questions": [{"prompt": "The company adapted ___ local culture.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The worker applied ___ a new position.", "answers": ["for"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The brand appealed ___ a younger audience.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The graph points ___ a sharp decline.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The department approved the transfer ___ credits.", "answers": ["of"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The bank charged interest ___ the loan.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The stock is listed ___ the exchange.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The company expanded ___ Asia.", "answers": ["into"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The event was held ___ a hotel.", "answers": ["at"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The speaker referred ___ the previous slide.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The share price climbed ___ EUR 80.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The course was recognised ___ the home institution.", "answers": ["by"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The email was forwarded ___ the whole team.", "answers": ["to"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The firm benefited ___ globalisation.", "answers": ["from"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}, {"prompt": "The presentation focused ___ key figures.", "answers": ["on"], "hint": "Prepozíció vagy kötött kifejezés.", "topic": "Master mixed round"}]}]}</script>
+  <script>
+    const DATA = JSON.parse(document.getElementById('test-data').textContent);
+    const state = {
+      activeTest: null,
+      activeGroup: null,
+      filter: 'all',
+      finished: false,
+      review: false,
+      result: null,
+      currentIndex: 0,
+      answers: [],
+      modalReturnFocus: null
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function normalize(value) {
+      return String(value || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('hu-HU');
+    }
+    function accepted(question, value) {
+      const v = normalize(value);
+      return question.answers.some(answer => normalize(answer) === v);
+    }
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+    function highlightBlank(prompt) {
+      return escapeHtml(prompt).replace('___', '<mark>___</mark>');
+    }
+    function allTests() {
+      return [
+        ...DATA.weeklyTests.map((test, index) => ({...test, group: 'weekly', badge: `W${index + 1}`})),
+        ...DATA.prepositionTests.map((test, index) => ({...test, group: 'prepositions', badge: `P${index + 1}`}))
+      ];
+    }
+    function bankCounts() {
+      const weekly = DATA.weeklyTests.reduce((sum, test) => sum + test.questions.length, 0);
+      const prep = DATA.prepositionTests.reduce((sum, test) => sum + test.questions.length, 0);
+      return { weekly, prep, tests: DATA.weeklyTests.length + DATA.prepositionTests.length };
+    }
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(screen => screen.classList.toggle('active', screen.id === id));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function renderDashboard() {
+      const counts = bankCounts();
+      $('kpiWeekly').textContent = String(counts.weekly);
+      $('kpiPrep').textContent = String(counts.prep);
+      $('kpiTests').textContent = String(counts.tests);
+      renderCards('weeklyGrid', DATA.weeklyTests, 'weekly');
+      renderCards('prepGrid', DATA.prepositionTests, 'prepositions');
+      applyFilter();
+    }
+    function renderCards(containerId, tests, group) {
+      const container = $(containerId);
+      container.innerHTML = '';
+      tests.forEach((test, index) => {
+        const card = document.createElement('article');
+        card.className = 'test-card';
+        card.dataset.group = group;
+        card.innerHTML = `
+          <div class="test-card-header">
+            <div class="test-badge">${group === 'weekly' ? `W${index + 1}` : `P${index + 1}`}</div>
+            <div>
+              <h3>${escapeHtml(test.title)}</h3>
+              <p class="muted">${escapeHtml(test.description)}</p>
+            </div>
+          </div>
+          <div class="meta-row">
+            <span class="pill">${test.questions.length} kérdés</span>
+            <span class="pill">beírós</span>
+            <span class="pill">1 pont / válasz</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn primary start-btn" type="button">Indítás</button>
+          </div>
+        `;
+        card.querySelector('.start-btn').addEventListener('click', () => startTest(test.id, group));
+        container.appendChild(card);
+      });
+    }
+    function applyFilter() {
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === state.filter));
+      document.querySelectorAll('.test-card').forEach(card => {
+        card.classList.toggle('hidden', state.filter !== 'all' && card.dataset.group !== state.filter);
+      });
+    }
+    function getTestById(id, group) {
+      const source = group === 'weekly' ? DATA.weeklyTests : DATA.prepositionTests;
+      return source.find(test => test.id === id);
+    }
+    function startTest(id, group) {
+      state.activeTest = getTestById(id, group);
+      state.activeGroup = group;
+      state.finished = false;
+      state.review = false;
+      state.result = null;
+      state.currentIndex = 0;
+      state.answers = state.activeTest.questions.map(() => '');
+      state.modalReturnFocus = document.activeElement;
+      renderExam();
+      openExamModal();
+    }
+    function openExamModal() {
+      $('examScreen').classList.add('active');
+      $('examScreen').setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      window.setTimeout(() => $('questionList').querySelector('input.answer')?.focus(), 0);
+    }
+    function closeExamModal() {
+      $('examScreen').classList.remove('active');
+      $('examScreen').setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      if (state.modalReturnFocus && typeof state.modalReturnFocus.focus === 'function') {
+        state.modalReturnFocus.focus();
+      }
+    }
+    function renderExam() {
+      const test = state.activeTest;
+      $('examTitle').textContent = test.title;
+      $('examDescription').textContent = test.description;
+      $('totalNow').textContent = String(test.questions.length);
+      $('scoreNow').textContent = '—';
+      $('percentNow').textContent = '—';
+      $('modeNow').textContent = 'Írás';
+      $('summary').innerHTML = '';
+      $('reviewBtn').classList.add('hidden');
+      $('reviewBtn').textContent = 'Visszanézés';
+      renderQuestionNav();
+      renderCurrentQuestion();
+      updateProgress();
+    }
+    function saveCurrentAnswer() {
+      if (state.finished) return;
+      const input = $('questionList').querySelector('input.answer');
+      if (input) {
+        state.answers[state.currentIndex] = input.value;
+      }
+    }
+    function updateNextButton() {
+      const value = state.answers[state.currentIndex] || '';
+      $('nextBtn').disabled = state.finished || !value.trim();
+    }
+    function renderCurrentQuestion() {
+      if (!state.activeTest) return;
+      const test = state.activeTest;
+      const q = test.questions[state.currentIndex];
+      const value = state.answers[state.currentIndex] || '';
+      const isLast = state.currentIndex === test.questions.length - 1;
+      const isCorrect = state.finished ? accepted(q, value) : false;
+      const feedback = state.finished ? (isCorrect ? 'Helyes. +1 pont' : '0 pont') : '';
+      $('stepLabel').textContent = `Kérdés ${state.currentIndex + 1} / ${test.questions.length}`;
+      $('topicLabel').textContent = q.topic || test.title;
+      $('questionList').innerHTML = `
+        <article class="question is-current ${state.finished ? (isCorrect ? 'review-correct' : 'review-incorrect') : ''}" id="q-${state.currentIndex + 1}" data-index="${state.currentIndex}">
+          <div class="q-top">
+            <div class="q-num">${state.currentIndex + 1}</div>
+            <div>
+              <div class="prompt">${highlightBlank(q.prompt)}</div>
+              <div class="meta-row">
+                <span class="pill">${escapeHtml(q.topic || test.title)}</span>
+                <span class="pill">1 pont</span>
+              </div>
+            </div>
+          </div>
+          <div class="answer-row">
+            <input class="answer ${state.finished ? (isCorrect ? 'correct' : 'incorrect') : ''}" autocomplete="off" spellcheck="false" aria-label="Válasz a(z) ${state.currentIndex + 1}. kérdésre" value="${escapeHtml(value)}" ${state.finished ? 'disabled' : ''}>
+            <div class="feedback ${state.finished ? (isCorrect ? 'good' : 'bad') : ''}" aria-live="polite">${escapeHtml(feedback)}</div>
+          </div>
+        </article>
+      `;
+      $('prevBtn').classList.toggle('hidden', state.finished);
+      $('nextBtn').classList.toggle('hidden', state.finished);
+      $('prevBtn').disabled = state.currentIndex === 0 || state.finished;
+      $('nextBtn').textContent = isLast ? 'Befejezés és pontozás' : 'Következő';
+      updateNextButton();
+      renderQuestionNav();
+      if (!state.finished) {
+        window.setTimeout(() => {
+          const input = $('questionList').querySelector('input.answer');
+          input?.focus();
+          input?.setSelectionRange(input.value.length, input.value.length);
+        }, 0);
+      }
+    }
+    function renderQuestionNav() {
+      const nav = $('questionNav');
+      nav.innerHTML = '';
+      state.activeTest.questions.forEach((_, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'qjump';
+        btn.type = 'button';
+        btn.textContent = String(index + 1);
+        btn.disabled = !state.finished && index > state.currentIndex;
+        btn.addEventListener('click', () => {
+          if (state.review) {
+            document.getElementById(`review-q-${index + 1}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            return;
+          }
+          if (!state.finished && index <= state.currentIndex) {
+            saveCurrentAnswer();
+            state.currentIndex = index;
+            renderCurrentQuestion();
+            updateProgress();
+          }
+        });
+        nav.appendChild(btn);
+      });
+    }
+    function updateProgress() {
+      const answered = state.answers.filter(answer => String(answer || '').trim()).length;
+      const total = state.activeTest?.questions.length || 1;
+      $('answeredLabel').textContent = `${answered} / ${total}`;
+      $('progressBar').style.width = `${Math.round((answered / total) * 100)}%`;
+      document.querySelectorAll('.qjump').forEach((btn, index) => {
+        const isAnswered = Boolean(String(state.answers[index] || '').trim());
+        btn.classList.toggle('answered', isAnswered && !state.finished);
+        btn.classList.toggle('current', index === state.currentIndex && !state.review);
+        if (state.finished) {
+          const q = state.activeTest.questions[index];
+          const isCorrect = accepted(q, state.answers[index] || '');
+          btn.classList.toggle('correct', isCorrect);
+          btn.classList.toggle('incorrect', !isCorrect);
+        } else {
+          btn.classList.remove('correct', 'incorrect');
+        }
+      });
+    }
+    function goNext() {
+      if (!state.activeTest || state.finished) return;
+      saveCurrentAnswer();
+      if (!String(state.answers[state.currentIndex] || '').trim()) {
+        updateNextButton();
+        return;
+      }
+      if (state.currentIndex >= state.activeTest.questions.length - 1) {
+        finishTest();
+        return;
+      }
+      state.currentIndex += 1;
+      renderCurrentQuestion();
+      updateProgress();
+    }
+    function goPrevious() {
+      if (!state.activeTest || state.finished || state.currentIndex === 0) return;
+      saveCurrentAnswer();
+      state.currentIndex -= 1;
+      renderCurrentQuestion();
+      updateProgress();
+    }
+    function finishTest() {
+      if (!state.activeTest || state.finished) return;
+      saveCurrentAnswer();
+      state.finished = true;
+      state.review = false;
+      let score = 0;
+      let correct = 0;
+      let incorrect = 0;
+      let empty = 0;
+      state.activeTest.questions.forEach((q, index) => {
+        const value = String(state.answers[index] || '').trim();
+        const isCorrect = accepted(q, value);
+        if (isCorrect) {
+          score += 1;
+          correct += 1;
+        } else if (value) {
+          incorrect += 1;
+        } else {
+          empty += 1;
+        }
+      });
+      const total = state.activeTest.questions.length;
+      const percent = Math.round((score / total) * 100);
+      state.result = { score, total, percent, correct, incorrect, empty };
+      $('scoreNow').textContent = String(score);
+      $('percentNow').textContent = `${percent}%`;
+      $('modeNow').textContent = 'Pontozva';
+      $('reviewBtn').classList.remove('hidden');
+      renderResult();
+      renderCurrentQuestion();
+      updateProgress();
+    }
+    function renderResult() {
+      const r = state.result;
+      const cls = r.percent >= 80 ? 'good' : r.percent >= 50 ? 'warn' : 'bad';
+      $('summary').innerHTML = `
+        <div class="result-card ${cls}">
+          <h3>Eredmény</h3>
+          <div class="result-score">${r.score} / ${r.total} pont</div>
+          <p>${r.percent}% teljesítmény</p>
+          <p class="muted">Helyes: ${r.correct} · Rossz: ${r.incorrect} · Üres: ${r.empty}</p>
+          <p class="muted">A helyes megoldásokat csak a Visszanézés gombbal mutatom.</p>
+        </div>
+      `;
+    }
+    function toggleReview() {
+      if (!state.finished) return;
+      state.review = !state.review;
+      $('modeNow').textContent = state.review ? 'Visszanézés' : 'Pontozva';
+      $('reviewBtn').textContent = state.review ? 'Visszanézés elrejtése' : 'Visszanézés';
+      if (state.review) {
+        renderReviewList();
+      } else {
+        renderCurrentQuestion();
+      }
+      updateProgress();
+    }
+    function renderReviewList() {
+      const test = state.activeTest;
+      $('stepLabel').textContent = 'Visszanézés';
+      $('topicLabel').textContent = `${test.questions.length} kérdés`;
+      $('prevBtn').classList.add('hidden');
+      $('nextBtn').classList.add('hidden');
+      $('questionList').innerHTML = test.questions.map((q, index) => {
+        const rawValue = String(state.answers[index] || '').trim();
+        const value = rawValue || '—';
+        const isCorrect = accepted(q, rawValue);
+        const feedback = isCorrect
+          ? `Helyes. Beírt válasz: ${escapeHtml(value)}. +1 pont`
+          : `0 pont. Beírt válasz: ${escapeHtml(value)}. Helyes megoldás: ${escapeHtml(q.answers[0])}`;
+        return `
+          <article class="question ${isCorrect ? 'review-correct' : 'review-incorrect'}" id="review-q-${index + 1}" data-index="${index}">
+            <div class="q-top">
+              <div class="q-num">${index + 1}</div>
+              <div>
+                <div class="prompt">${highlightBlank(q.prompt)}</div>
+                <div class="meta-row">
+                  <span class="pill">${escapeHtml(q.topic || test.title)}</span>
+                  <span class="pill">1 pont</span>
+                </div>
+              </div>
+            </div>
+            <div class="answer-row">
+              <input class="answer ${isCorrect ? 'correct' : 'incorrect'}" value="${escapeHtml(rawValue)}" disabled>
+              <div class="feedback ${isCorrect ? 'good' : 'bad'}">${feedback}</div>
+            </div>
+          </article>
+        `;
+      }).join('');
+      renderQuestionNav();
+    }
+    function retryTest() {
+      if (!state.activeTest) return;
+      state.finished = false;
+      state.review = false;
+      state.result = null;
+      state.currentIndex = 0;
+      state.answers = state.activeTest.questions.map(() => '');
+      renderExam();
+      if (!$('examScreen').classList.contains('active')) {
+        openExamModal();
+      }
+    }
+    function goHome() {
+      closeExamModal();
+      state.activeTest = null;
+      state.activeGroup = null;
+      state.finished = false;
+      state.review = false;
+      state.result = null;
+      state.currentIndex = 0;
+      state.answers = [];
+    }
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.filter = btn.dataset.filter;
+        applyFilter();
+      });
+    });
+    $('questionList').addEventListener('input', (event) => {
+      if (!event.target.matches('input.answer')) return;
+      state.answers[state.currentIndex] = event.target.value;
+      updateProgress();
+      updateNextButton();
+    });
+    $('questionList').addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' || event.isComposing || state.finished) return;
+      if ($('nextBtn').disabled) return;
+      event.preventDefault();
+      goNext();
+    });
+    $('nextBtn').addEventListener('click', goNext);
+    $('prevBtn').addEventListener('click', goPrevious);
+    $('reviewBtn').addEventListener('click', toggleReview);
+    $('retryBtn').addEventListener('click', retryTest);
+    $('exitBtn').addEventListener('click', goHome);
+    $('modalBackdrop').addEventListener('click', () => {
+      if (state.finished) goHome();
+    });
+    $('homeBtn').addEventListener('click', goHome);
+    $('newRoundBtn').addEventListener('click', () => {
+      if (state.activeTest) retryTest();
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    renderDashboard();
+  </script>
+</body>
+</html>
