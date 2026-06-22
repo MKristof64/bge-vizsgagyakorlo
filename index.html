@@ -1421,7 +1421,7 @@
       if (!state.activeTest || state.finished) return;
       saveCurrentAnswer();
       state.finished = true;
-      state.review = false;
+      state.review = true;
       let score = 0;
       let correct = 0;
       let incorrect = 0;
@@ -1443,10 +1443,11 @@
       state.result = { score, total, percent, correct, incorrect, empty };
       $('scoreNow').textContent = String(score);
       $('percentNow').textContent = `${percent}%`;
-      $('modeNow').textContent = 'Pontozva';
+      $('modeNow').textContent = 'Visszanézés';
       $('reviewBtn').classList.remove('hidden');
+      $('reviewBtn').textContent = 'Visszanézés elrejtése';
       renderResult();
-      renderCurrentQuestion();
+      renderReviewList();
       updateProgress();
     }
     function renderResult() {
@@ -1458,7 +1459,7 @@
           <div class="result-score">${r.score} / ${r.total} pont</div>
           <p>${r.percent}% teljesítmény</p>
           <p class="muted">Helyes: ${r.correct} · Rossz: ${r.incorrect} · Üres: ${r.empty}</p>
-          <p class="muted">A helyes megoldásokat csak a Visszanézés gombbal mutatom.</p>
+          <p class="muted">A részletes megoldásokat a Visszanézés gombbal bármikor megnyithatod vagy elrejtheted.</p>
         </div>
       `;
     }
@@ -1507,6 +1508,7 @@
         `;
       }).join('');
       renderQuestionNav();
+      document.querySelector('.exam-dialog')?.scrollTo({ top: 0, behavior: 'smooth' });
     }
     function retryTest() {
       if (!state.activeTest) return;
