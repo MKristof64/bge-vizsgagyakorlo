@@ -572,20 +572,470 @@
       .step-actions-right { width: 100%; }
       .step-actions .btn { flex: 1 1 auto; }
     }
+
+    /* Premium application theme */
+    :root {
+      --bg: #f3f5f7;
+      --paper: #ffffff;
+      --paper-2: #f8fafb;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #d9dee7;
+      --strong-line: #b9c2cf;
+      --accent: #173f66;
+      --accent-2: #0d2d4a;
+      --accent-soft: #eaf1f7;
+      --good: #276749;
+      --good-soft: #edf7f1;
+      --bad: #b42318;
+      --bad-soft: #fff2f0;
+      --warn: #8a5d00;
+      --warn-soft: #fff8e6;
+      --prep: #2f6b57;
+      --prep-soft: #edf6f1;
+      --radius: 7px;
+      --shadow: 0 12px 30px rgba(16, 24, 40, .09);
+    }
+    body {
+      background: var(--bg);
+      font-family: "Segoe UI Variable", "Segoe UI", Inter, Arial, sans-serif;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    .topbar {
+      background: rgba(255, 255, 255, .96);
+      border-bottom-color: #e4e7ec;
+      backdrop-filter: blur(14px);
+    }
+    .topbar-inner {
+      max-width: 1280px;
+      min-height: 72px;
+      padding: 12px 28px;
+      gap: 24px;
+    }
+    .brand-lockup { min-width: 0; }
+    .brand-kicker {
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .brand {
+      margin-top: 1px;
+      font-size: 19px;
+      line-height: 1.2;
+      color: var(--ink);
+    }
+    .brand-sub {
+      max-width: 650px;
+      margin-top: 3px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .top-actions { gap: 7px; flex-wrap: nowrap; }
+    .btn {
+      min-height: 38px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 650;
+      box-shadow: 0 1px 1px rgba(16, 24, 40, .03);
+      transition: border-color .16s ease, background .16s ease, color .16s ease, transform .16s ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:focus-visible,
+    .filter-btn:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(46, 116, 181, .24);
+      outline-offset: 2px;
+    }
+    .summary-link { gap: 8px; }
+    .docx-label {
+      border: 1px solid rgba(255, 255, 255, .38);
+      border-radius: 3px;
+      padding: 1px 4px;
+      font-size: 9px;
+      font-weight: 800;
+    }
+    main {
+      max-width: 1280px;
+      padding: 30px 28px 72px;
+    }
+    .hero {
+      margin: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+    .hero-grid {
+      grid-template-columns: minmax(300px, 1fr) minmax(560px, 700px);
+      gap: 38px;
+      align-items: center;
+    }
+    .page-eyebrow {
+      margin: 0 0 7px;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-size: 30px;
+      line-height: 1.18;
+      margin-bottom: 7px;
+    }
+    .topic-line {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .hero-kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--paper);
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(16, 24, 40, .04);
+    }
+    .kpi {
+      min-width: 0;
+      padding: 14px 16px;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--paper);
+    }
+    .kpi:last-child { border-right: 0; }
+    .kpi strong { font-size: 23px; color: var(--ink); }
+    .kpi span {
+      display: block;
+      margin-top: 3px;
+      font-size: 11px;
+      line-height: 1.25;
+    }
+    .rules { display: none; }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 24px 0 10px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+    }
+    .filters {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      gap: 2px;
+      margin: 0;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #e9edf2;
+    }
+    .filter-btn {
+      min-height: 34px;
+      padding: 7px 12px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: #475467;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .filter-btn.active {
+      background: var(--paper);
+      color: var(--accent);
+      box-shadow: 0 1px 3px rgba(16, 24, 40, .12);
+    }
+    .search-wrap { width: min(320px, 38vw); }
+    .search-input {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 8px 12px;
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13px;
+      box-shadow: 0 1px 2px rgba(16, 24, 40, .03);
+    }
+    .search-input::placeholder { color: #98a2b3; }
+    .test-section { padding-top: 12px; }
+    .section-head {
+      align-items: center;
+      margin: 0 0 12px;
+      padding: 0;
+    }
+    .section-head h2 {
+      margin: 0 0 3px;
+      font-size: 18px;
+      line-height: 1.25;
+    }
+    .section-head p { margin: 0; font-size: 12px; }
+    .section-count {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .test-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .test-card {
+      min-width: 0;
+      min-height: 188px;
+      padding: 15px;
+      gap: 11px;
+      border-color: #e0e4ea;
+      box-shadow: 0 3px 10px rgba(16, 24, 40, .035);
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .test-card:hover {
+      transform: translateY(-2px);
+      border-color: #9fb3c7;
+      box-shadow: 0 10px 22px rgba(16, 24, 40, .08);
+    }
+    .test-card.prep-card:hover { border-color: #9fc3b3; }
+    .test-card-header { gap: 10px; min-width: 0; }
+    .test-card-header > div:last-child { min-width: 0; }
+    .test-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      font-size: 12px;
+      letter-spacing: 0;
+    }
+    .prep-card .test-badge {
+      color: var(--prep);
+      background: var(--prep-soft);
+    }
+    .test-card h3 {
+      margin: 0 0 5px;
+      font-size: 15px;
+      line-height: 1.3;
+      overflow-wrap: anywhere;
+    }
+    .test-card .muted {
+      display: -webkit-box;
+      margin: 0;
+      overflow: hidden;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .meta-row { gap: 5px; }
+    .pill {
+      border-radius: 4px;
+      padding: 3px 6px;
+      font-size: 10px;
+      font-weight: 650;
+    }
+    .card-actions .btn { width: 100%; }
+    .prep-card .card-actions .btn.primary {
+      background: var(--prep);
+      border-color: var(--prep);
+    }
+    .empty-state {
+      padding: 32px 0;
+      color: var(--muted);
+      text-align: center;
+      font-size: 14px;
+    }
+    .panel { border-color: #d5dbe4; }
+    .modal-screen { padding: 24px; }
+    .modal-backdrop {
+      background: rgba(12, 23, 36, .58);
+      backdrop-filter: blur(6px);
+    }
+    .exam-dialog {
+      width: min(1180px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px);
+      padding: 0;
+      overflow: auto;
+      border-radius: 8px;
+      box-shadow: 0 30px 80px rgba(5, 16, 28, .3);
+    }
+    .exam-title-row {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      align-items: center;
+      margin: 0;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .98);
+    }
+    .exam-title-row h1 { margin: 0 0 3px; font-size: 21px; }
+    .exam-title-row p { margin: 0; font-size: 12px; }
+    .modal-body {
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 0;
+    }
+    .question-stage {
+      min-width: 0;
+      min-height: 540px;
+      padding: 24px;
+    }
+    .exam-sidebar {
+      position: sticky;
+      top: 79px;
+      min-height: 540px;
+      padding: 20px;
+      border-left: 1px solid var(--line);
+      background: #f8fafb;
+    }
+    .exam-sidebar h3 { font-size: 14px; }
+    .step-label { letter-spacing: 0; font-size: 12px; }
+    .question {
+      min-height: 300px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 7px;
+      background: var(--paper);
+      box-shadow: 0 5px 16px rgba(16, 24, 40, .04);
+    }
+    .prompt { font-size: 19px; line-height: 1.48; }
+    mark { background: #fff0a8; border-radius: 2px; }
+    .answer-row {
+      grid-template-columns: minmax(220px, 520px) minmax(0, 1fr);
+      gap: 12px;
+    }
+    input.answer {
+      min-height: 50px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .step-actions {
+      margin-top: 2px;
+      padding-top: 14px;
+    }
+    .step-actions .btn { min-width: 120px; min-height: 42px; }
+    .progress { height: 6px; border-radius: 3px; }
+    .progress-bar { background: var(--accent); }
+    .status-grid { gap: 7px; }
+    .status-box {
+      border-radius: 6px;
+      padding: 9px;
+      background: var(--paper);
+    }
+    .status-box strong { font-size: 20px; }
+    .qjump { border-radius: 5px; }
+    .result-card { border-radius: 7px; }
+
+    @media (max-width: 1120px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 18px; }
+      .test-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 860px) {
+      .topbar-inner { padding-inline: 20px; }
+      main { padding-inline: 20px; }
+      .test-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .modal-body { grid-template-columns: 1fr; }
+      .exam-sidebar {
+        position: static;
+        min-height: 0;
+        border-top: 1px solid var(--line);
+        border-left: 0;
+      }
+    }
+    @media (max-width: 620px) {
+      .topbar-inner {
+        min-height: 0;
+        padding: 10px 14px 11px;
+        grid-template-columns: 1fr;
+        gap: 9px;
+      }
+      .brand-kicker { font-size: 9px; }
+      .brand { font-size: 17px; }
+      .brand-sub { display: none; }
+      .top-actions { display: grid; grid-template-columns: 1fr 1fr 1.35fr; width: 100%; gap: 6px; }
+      .top-actions .btn { min-width: 0; padding-inline: 7px; }
+      .docx-label { display: none; }
+      main { padding: 20px 14px 52px; }
+      .hero-grid { gap: 14px; }
+      h1 { font-size: 25px; }
+      .page-eyebrow { font-size: 10px; }
+      .topic-line { font-size: 13px; }
+      .hero-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi { padding: 12px; border-bottom: 1px solid var(--line); }
+      .kpi:nth-child(2) { border-right: 0; }
+      .kpi:nth-child(3), .kpi:nth-child(4) { border-bottom: 0; }
+      .kpi strong { font-size: 21px; }
+      .toolbar { align-items: stretch; flex-direction: column; margin-top: 18px; padding-top: 14px; }
+      .filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+      .filter-btn { padding-inline: 5px; overflow-wrap: anywhere; white-space: normal; }
+      .search-wrap { width: 100%; }
+      .search-input { min-height: 44px; }
+      .test-section { padding-top: 10px; }
+      .section-head { align-items: flex-start; }
+      .section-count { padding-top: 3px; white-space: nowrap; }
+      .test-grid { grid-template-columns: 1fr; gap: 10px; }
+      .test-card { min-height: 176px; padding: 14px; }
+      .test-card h3 { font-size: 15px; }
+      .modal-screen { padding: 0; }
+      .exam-dialog {
+        width: 100%;
+        height: 100svh;
+        max-height: 100svh;
+        border: 0;
+        border-radius: 0;
+      }
+      .exam-title-row { padding: 13px 14px; }
+      .exam-title-row h1 { font-size: 17px; }
+      .exam-title-row p { display: none; }
+      .exam-title-row .btn { min-height: 36px; }
+      .question-stage { min-height: 0; padding: 16px 14px 12px; gap: 12px; }
+      .step-header { align-items: flex-start; }
+      .step-header .pill { max-width: 62%; white-space: normal; text-align: right; }
+      .question { min-height: 270px; padding: 17px 14px; }
+      .q-top { grid-template-columns: 30px minmax(0, 1fr); gap: 9px; }
+      .q-num { width: 30px; height: 30px; font-size: 13px; }
+      .prompt { font-size: 17px; line-height: 1.46; }
+      .answer-row { grid-template-columns: 1fr; }
+      input.answer { min-height: 52px; font-size: 16px; }
+      .step-actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 4;
+        margin: 0 -14px;
+        padding: 11px 14px calc(11px + env(safe-area-inset-bottom));
+        border-top: 1px solid var(--line);
+        background: rgba(255, 255, 255, .98);
+      }
+      .step-actions-left, .step-actions-right { width: auto; flex: 1; }
+      .step-actions .btn { width: 100%; min-height: 46px; }
+      .exam-sidebar { padding: 17px 14px calc(24px + env(safe-area-inset-bottom)); }
+      .status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .question-nav { grid-template-columns: repeat(5, 1fr); }
+      .result-actions .btn { flex: 1 1 auto; }
+    }
   </style>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
       <div class="topbar-inner">
-        <div>
+        <div class="brand-lockup">
+          <div class="brand-kicker">Business English Practice</div>
           <div class="brand">BGE vizsgagyakorló</div>
           <div class="brand-sub">Beírós tesztek kizárólag a gyakorlati órák szavaira, kifejezéseire és prepozícióira</div>
         </div>
         <div class="top-actions">
           <button class="btn" id="homeBtn" type="button">Tesztválasztó</button>
           <button class="btn" id="newRoundBtn" type="button">Új kör</button>
-          <a class="btn primary" href="BGE_szurt_szakszavak_prezpoziciok_osszefoglalo.docx" download>Összefoglaló</a>
+          <a class="btn primary summary-link" href="BGE_szurt_szakszavak_prezpoziciok_osszefoglalo.docx" download>
+            <span class="docx-label" aria-hidden="true">DOCX</span>
+            <span>Összefoglaló</span>
+          </a>
         </div>
       </div>
     </header>
@@ -595,8 +1045,9 @@
         <div class="hero">
           <div class="hero-grid">
             <div>
-              <h1>Indíts külön tesztet minden témára</h1>
-              <p class="muted">A felület a CoSpace beírós tesztlogikáját követi, és kizárólag a hat gyakorlati téma anyagát használja. Minden szakszó egyszer szerepel, saját mondattal és egyetlen elfogadott válasszal.</p>
+              <div class="page-eyebrow">Gyakorlati órák · 2025/26/2</div>
+              <h1>Vizsgagyakorló</h1>
+              <p class="topic-line">Culture · Employment · Marketing · Graphs · Academic Life</p>
             </div>
             <div class="hero-kpis">
               <div class="kpi"><strong id="kpiWeekly">172</strong><span>egyedi gyakorlati szakszó</span></div>
@@ -605,35 +1056,41 @@
               <div class="kpi"><strong>1p</strong><span>minden helyes válasz</span></div>
             </div>
           </div>
-          <div class="rules">
-            <div class="rule"><strong>Indítás kell</strong><br>kérdések csak a választott teszt indítása után jelennek meg</div>
-            <div class="rule"><strong>Nincs súgás</strong><br>kitöltés közben nincs jó válasz és nincs pontozás</div>
-            <div class="rule"><strong>Spelling számít</strong><br>kis/nagybetű nem számít, helyesírási hiba 0 pont</div>
-            <div class="rule"><strong>Visszanézés</strong><br>a végén látszik a saját rossz válasz és a helyes megoldás</div>
+        </div>
+
+        <div class="toolbar">
+          <div class="filters" role="group" aria-label="Tesztcsoport szűrő">
+            <button class="filter-btn active" data-filter="all" type="button" aria-pressed="true">Összes teszt</button>
+            <button class="filter-btn" data-filter="weekly" type="button" aria-pressed="false">Szakszavak</button>
+            <button class="filter-btn" data-filter="prepositions" type="button" aria-pressed="false">Prepozíciók</button>
+          </div>
+          <div class="search-wrap">
+            <input class="search-input" id="testSearch" type="search" placeholder="Teszt keresése" aria-label="Teszt keresése">
           </div>
         </div>
 
-        <div class="filters" role="group" aria-label="Tesztcsoport szűrő">
-          <button class="filter-btn active" data-filter="all" type="button">Összes teszt</button>
-          <button class="filter-btn" data-filter="weekly" type="button">Gyakorlati szakszavak</button>
-          <button class="filter-btn" data-filter="prepositions" type="button">Prepozíciók</button>
-        </div>
-
-        <div class="section-head">
-          <div>
-            <h2>Gyakorlati szakszótesztek</h2>
-            <p class="muted">172 egyedi szakszó és kifejezés, legfeljebb 15 kérdéses blokkokban.</p>
+        <section class="test-section" id="weeklySection">
+          <div class="section-head">
+            <div>
+              <h2>Gyakorlati szakszótesztek</h2>
+              <p class="muted">172 egyedi szakszó és kifejezés, legfeljebb 15 kérdéses blokkokban.</p>
+            </div>
+            <span class="section-count">15 teszt</span>
           </div>
-        </div>
-        <div class="test-grid" id="weeklyGrid"></div>
+          <div class="test-grid" id="weeklyGrid"></div>
+        </section>
 
-        <div class="section-head">
-          <div>
-            <h2>Prepozíciós tesztek</h2>
-            <p class="muted">66 kollokáció kizárólag a gyakorlati órákból, legfeljebb 15 kérdéses blokkokban.</p>
+        <section class="test-section" id="prepSection">
+          <div class="section-head">
+            <div>
+              <h2>Prepozíciós tesztek</h2>
+              <p class="muted">66 kollokáció kizárólag a gyakorlati órákból, legfeljebb 15 kérdéses blokkokban.</p>
+            </div>
+            <span class="section-count">5 teszt</span>
           </div>
-        </div>
-        <div class="test-grid" id="prepGrid"></div>
+          <div class="test-grid" id="prepGrid"></div>
+        </section>
+        <div class="empty-state hidden" id="emptyState">Nincs találat.</div>
       </section>
 
       <section class="screen modal-screen" id="examScreen" role="dialog" aria-modal="true" aria-labelledby="examTitle" aria-hidden="true">
@@ -694,6 +1151,7 @@
       activeTest: null,
       activeGroup: null,
       filter: 'all',
+      query: '',
       finished: false,
       review: false,
       result: null,
@@ -751,8 +1209,9 @@
       container.innerHTML = '';
       tests.forEach((test, index) => {
         const card = document.createElement('article');
-        card.className = 'test-card';
+        card.className = `test-card ${group === 'prepositions' ? 'prep-card' : ''}`;
         card.dataset.group = group;
+        card.dataset.search = normalize(`${test.title} ${test.description}`);
         card.innerHTML = `
           <div class="test-card-header">
             <div class="test-badge">${group === 'weekly' ? `W${index + 1}` : `P${index + 1}`}</div>
@@ -770,22 +1229,37 @@
             <button class="btn primary start-btn" type="button">Indítás</button>
           </div>
         `;
-        card.querySelector('.start-btn').addEventListener('click', () => startTest(test.id, group));
+        card.querySelector('.start-btn').addEventListener('click', () => startTest(index, group));
         container.appendChild(card);
       });
     }
     function applyFilter() {
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.filter === state.filter));
-      document.querySelectorAll('.test-card').forEach(card => {
-        card.classList.toggle('hidden', state.filter !== 'all' && card.dataset.group !== state.filter);
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        const active = btn.dataset.filter === state.filter;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-pressed', String(active));
       });
+      const query = normalize(state.query);
+      let weeklyVisible = 0;
+      let prepVisible = 0;
+      document.querySelectorAll('.test-card').forEach(card => {
+        const groupMatch = state.filter === 'all' || card.dataset.group === state.filter;
+        const queryMatch = !query || card.dataset.search.includes(query);
+        const visible = groupMatch && queryMatch;
+        card.classList.toggle('hidden', !visible);
+        if (visible && card.dataset.group === 'weekly') weeklyVisible += 1;
+        if (visible && card.dataset.group === 'prepositions') prepVisible += 1;
+      });
+      $('weeklySection').classList.toggle('hidden', weeklyVisible === 0);
+      $('prepSection').classList.toggle('hidden', prepVisible === 0);
+      $('emptyState').classList.toggle('hidden', weeklyVisible + prepVisible > 0);
     }
-    function getTestById(id, group) {
+    function getTestByIndex(index, group) {
       const source = group === 'weekly' ? DATA.weeklyTests : DATA.prepositionTests;
-      return source.find(test => test.id === id);
+      return source[index];
     }
-    function startTest(id, group) {
-      state.activeTest = getTestById(id, group);
+    function startTest(index, group) {
+      state.activeTest = getTestByIndex(index, group);
       state.activeGroup = group;
       state.finished = false;
       state.review = false;
@@ -1061,6 +1535,10 @@
         state.filter = btn.dataset.filter;
         applyFilter();
       });
+    });
+    $('testSearch').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      applyFilter();
     });
     $('questionList').addEventListener('input', (event) => {
       if (!event.target.matches('input.answer')) return;
